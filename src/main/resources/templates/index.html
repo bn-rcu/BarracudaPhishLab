@@ -7,6 +7,20 @@
     <style>
         body { padding: 2rem; }
         .tab-content { margin-top: 2rem; }
+        label.form-label, label { font-weight: bold; }
+        #templateContent, #landingContent {
+            min-height: 400px;
+            height: 400px;
+            resize: vertical;
+        }
+        #templatePreview, #landingPreview {
+            min-height: 400px;
+            height: 400px;
+            background: #fafafa;
+            border: 1px solid #ccc;
+            padding: 1rem;
+            overflow: auto;
+        }
     </style>
 </head>
 <body>
@@ -42,15 +56,15 @@
                 <form id="campaignForm" onsubmit="event.preventDefault();">
                     <div class="mb-3">
                         <label for="campaignName" class="form-label">Campaign Name</label>
-                        <input type="text" class="form-control" id="campaignName" placeholder="Enter campaign name">
+                        <input type="text" class="form-control" id="campaignName" placeholder="Enter campaign name" autocomplete="off">
                     </div>
                     <div class="mb-3">
                         <label for="campaignDesc" class="form-label">Description</label>
-                        <textarea class="form-control" id="campaignDesc" rows="2" placeholder="Enter campaign description"></textarea>
+                        <textarea class="form-control" id="campaignDesc" rows="2" placeholder="Enter campaign description" autocomplete="off"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="targetUsers" class="form-label">Target Users (comma separated emails)</label>
-                        <input type="text" class="form-control" id="targetUsers" placeholder="user1@example.com, user2@example.com">
+                        <input type="text" class="form-control" id="targetUsers" placeholder="user1@example.com, user2@example.com" autocomplete="off">
                     </div>
                     <div class="mb-3">
                         <label for="campaignEmailTemplate" class="form-label">Email Template</label>
@@ -81,7 +95,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="templateAIQuery" class="form-label">NLP Query to AI</label>
-                        <input type="text" class="form-control" id="templateAIQuery" placeholder="Ask AI to generate subject or body...">
+                        <input type="text" class="form-control" id="templateAIQuery" placeholder="Ask AI to generate subject or body..." autocomplete="off">
                         <button type="button" class="btn btn-primary mt-2" id="templateAIFetchBtn">Fetch from AI</button>
                         <div class="radio-group mt-2">
                             <label><input type="radio" name="templateAIOutput" value="subject" checked> Populate Subject</label>
@@ -90,11 +104,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="templateName" class="form-label">Template Name</label>
-                        <input type="text" class="form-control" id="templateName" placeholder="Enter template name">
+                        <input type="text" class="form-control" id="templateName" placeholder="Enter template name" autocomplete="off">
                     </div>
                     <div class="mb-3">
                         <label for="templateSubject" class="form-label">Email Subject</label>
-                        <textarea class="form-control" id="templateSubject" rows="1" maxlength="80" style="height:2.5em;resize:none;" placeholder="Max 10 words..."></textarea>
+                        <textarea class="form-control" id="templateSubject" rows="1" maxlength="80" style="height:2.5em;resize:none;" placeholder="Max 10 words..." autocomplete="off"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="templateLandingPage" class="form-label">Select Landing Page</label>
@@ -108,7 +122,7 @@
                                 <tr>
                                     <td style="width:50%; vertical-align:top;">
                                         <label for="templateContent" class="form-label">Email HTML Editor</label>
-                                        <textarea class="form-control" id="templateContent" rows="10" placeholder="Email body..."></textarea>
+                                        <textarea class="form-control" id="templateContent" rows="10" placeholder="Email body..." autocomplete="off"></textarea>
                                     </td>
                                     <td style="width:50%; vertical-align:top;">
                                         <label class="form-label">Live Preview</label>
@@ -142,12 +156,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="landingAIQuery" class="form-label">NLP Query to AI</label>
-                        <input type="text" class="form-control" id="landingAIQuery" placeholder="Ask AI to generate landing page HTML...">
+                        <input type="text" class="form-control" id="landingAIQuery" placeholder="Ask AI to generate landing page HTML..." autocomplete="off">
                         <button type="button" class="btn btn-primary mt-2" id="landingAIFetchBtn">Fetch from AI</button>
                     </div>
                     <div class="mb-3">
                         <label for="landingName" class="form-label">Landing Page Name</label>
-                        <input type="text" class="form-control" id="landingName" placeholder="Enter landing page name">
+                        <input type="text" class="form-control" id="landingName" placeholder="Enter landing page name" autocomplete="off">
                     </div>
                     <div class="row">
                         <div class="col-md-12">
@@ -155,7 +169,7 @@
                                 <tr>
                                     <td style="width:50%; vertical-align:top;">
                                         <label for="landingContent" class="form-label">Landing Page HTML Editor</label>
-                                        <textarea class="form-control" id="landingContent" rows="10" placeholder="HTML or text for landing page..."></textarea>
+                                        <textarea class="form-control" id="landingContent" rows="10" placeholder="HTML or text for landing page..." autocomplete="off"></textarea>
                                     </td>
                                     <td style="width:50%; vertical-align:top;">
                                         <label class="form-label">Live Preview</label>
@@ -180,11 +194,11 @@
                 <form>
                     <div class="mb-3">
                         <label for="userEmails" class="form-label">Add Users (comma separated emails)</label>
-                        <input type="text" class="form-control" id="userEmails" placeholder="user1@example.com, user2@example.com">
+                        <input type="text" class="form-control" id="userEmails" placeholder="user1@example.com, user2@example.com" autocomplete="off">
                     </div>
                     <div class="mb-3">
                         <label for="groupName" class="form-label">Group Name</label>
-                        <input type="text" class="form-control" id="groupName" placeholder="Enter group name">
+                        <input type="text" class="form-control" id="groupName" placeholder="Enter group name" autocomplete="off">
                     </div>
                     <button type="submit" class="btn btn-secondary">Add Group</button>
                 </form>
@@ -266,6 +280,10 @@
                     htmlContent: document.getElementById('templateContent').value,
                     subject: document.getElementById('templateSubject').value
                 };
+                if (!dto.name) {
+                    alert('Email Template Name is required!');
+                    return;
+                }
                 if (id) {
                     fetch(`/api/email-templates/${id}`, {
                         method: 'PUT',
@@ -342,6 +360,10 @@
                     name: document.getElementById('landingName').value,
                     htmlContent: document.getElementById('landingContent').value
                 };
+                if (!dto.name || !dto.htmlContent) {
+                    alert('Landing Page Name and HTML Content are required!');
+                    return;
+                }
                 if (id) {
                     fetch(`/api/landing-pages/${id}`, {
                         method: 'PUT',
@@ -409,8 +431,10 @@
                 if (landingUrl) {
                     userQuery += ` Landing page URL: ${landingUrl}`;
                 }
+            } else if (selectedTarget === 'subject') {
+                userQuery += ' in max two or three words';
             }
-            if (!userQuery) {
+            if (!userQuery.trim()) {
                 alert('Please enter a query.');
                 return;
             }
@@ -523,6 +547,18 @@
                 alert('Campaign saved and emails sent!');
             });
         };
+
+        // Require Landing Page selection before AI fetch for subject
+        const templateAIFetchBtn = document.getElementById('templateAIFetchBtn');
+        templateAIFetchBtn.addEventListener('click', function(e) {
+            const outputType = document.querySelector('input[name="templateAIOutput"]:checked').value;
+            const landingPage = document.getElementById('templateLandingPage').value;
+            if (outputType === 'subject' && !landingPage) {
+                alert('Please select a Landing Page before fetching AI for subject.');
+                e.preventDefault();
+                return false;
+            }
+        });
     </script>
 </body>
 </html>
