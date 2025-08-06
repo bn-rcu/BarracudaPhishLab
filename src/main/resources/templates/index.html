@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Phishing Campaign Simulator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { padding: 2rem; }
+        .tab-content { margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mb-4">Phishing Campaign Simulator</h2>
+        <div class="d-flex justify-content-end mb-3">
+            <a href="/logout" class="btn btn-outline-danger">Logout</a>
+        </div>
+        <ul class="nav nav-tabs" id="mainTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">Dashboard</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="campaign-tab" data-bs-toggle="tab" data-bs-target="#campaign" type="button" role="tab">Campaign</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="template-tab" data-bs-toggle="tab" data-bs-target="#template" type="button" role="tab">Email Template</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="landing-tab" data-bs-toggle="tab" data-bs-target="#landing" type="button" role="tab">Landing Page</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Users & Groups</button>
+            </li>
+        </ul>
+        <div class="tab-content" id="mainTabContent">
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <h4>Dashboard</h4>
+                <p>Overview of campaigns and statistics will appear here.</p>
+            </div>
+            <div class="tab-pane fade" id="campaign" role="tabpanel">
+                <h4>Campaign</h4>
+                <form id="campaignForm" onsubmit="event.preventDefault();">
+                    <div class="mb-3">
+                        <label for="campaignName" class="form-label">Campaign Name</label>
+                        <input type="text" class="form-control" id="campaignName" placeholder="Enter campaign name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="campaignDesc" class="form-label">Description</label>
+                        <textarea class="form-control" id="campaignDesc" rows="2" placeholder="Enter campaign description"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="targetUsers" class="form-label">Target Users (comma separated emails)</label>
+                        <input type="text" class="form-control" id="targetUsers" placeholder="user1@example.com, user2@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="campaignEmailTemplate" class="form-label">Email Template</label>
+                        <select class="form-select" id="campaignEmailTemplate">
+                            <option value="">-- Select Email Template --</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="campaignLandingPage" class="form-label">Landing Page</label>
+                        <select class="form-select" id="campaignLandingPage">
+                            <option value="">-- Select Landing Page --</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="createCampaignBtn">Create Campaign</button>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="template" role="tabpanel">
+                <h4>Email Template</h4>
+                <form onsubmit="event.preventDefault();">
+                    <div class="mb-3">
+                        <label for="templateSelect" class="form-label">Select Email Template</label>
+                        <select class="form-select mb-3" id="templateSelect" onchange="loadEmailTemplate()">
+                            <option value="">-- Select --</option>
+                            <option value="1">Welcome Email</option>
+                            <option value="2">Security Alert</option>
+                            <option value="3">Special Offer</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="templateAIQuery" class="form-label">NLP Query to AI</label>
+                        <input type="text" class="form-control" id="templateAIQuery" placeholder="Ask AI to generate subject or body...">
+                        <button type="button" class="btn btn-primary mt-2" id="templateAIFetchBtn">Fetch from AI</button>
+                        <div class="radio-group mt-2">
+                            <label><input type="radio" name="templateAIOutput" value="subject" checked> Populate Subject</label>
+                            <label class="ms-3"><input type="radio" name="templateAIOutput" value="body"> Populate Body</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="templateName" class="form-label">Template Name</label>
+                        <input type="text" class="form-control" id="templateName" placeholder="Enter template name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="templateSubject" class="form-label">Email Subject</label>
+                        <textarea class="form-control" id="templateSubject" rows="1" maxlength="80" style="height:2.5em;resize:none;" placeholder="Max 10 words..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="templateLandingPage" class="form-label">Select Landing Page</label>
+                        <select class="form-select" id="templateLandingPage">
+                            <option value="">-- Select Landing Page --</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table borderless align-middle">
+                                <tr>
+                                    <td style="width:50%; vertical-align:top;">
+                                        <label for="templateContent" class="form-label">Email HTML Editor</label>
+                                        <textarea class="form-control" id="templateContent" rows="10" placeholder="Email body..."></textarea>
+                                    </td>
+                                    <td style="width:50%; vertical-align:top;">
+                                        <label class="form-label">Live Preview</label>
+                                        <div id="templatePreview" style="border:1px solid #ccc; min-height:200px; padding:1rem; background:#fafafa;"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="table borderless mt-2">
+                                <tr>
+                                    <td class="text-center">
+                                        <button type="submit" class="btn btn-success" style="min-width:120px;" id="saveTemplateBtn">Save</button>
+                                        <button type="button" class="btn btn-danger ms-2" style="min-width:100px;" id="deleteTemplateBtn">Delete</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="landing" role="tabpanel">
+                <h4>Landing Page</h4>
+                <form onsubmit="event.preventDefault();">
+                    <div class="mb-3">
+                        <label for="landingSelect" class="form-label">Select Landing Page</label>
+                        <select class="form-select mb-3" id="landingSelect" onchange="loadLandingPage()">
+                            <option value="">-- Select --</option>
+                            <option value="1">Landing Page 1</option>
+                            <option value="2">Landing Page 2</option>
+                            <option value="3">Landing Page 3</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="landingAIQuery" class="form-label">NLP Query to AI</label>
+                        <input type="text" class="form-control" id="landingAIQuery" placeholder="Ask AI to generate landing page HTML...">
+                        <button type="button" class="btn btn-primary mt-2" id="landingAIFetchBtn">Fetch from AI</button>
+                    </div>
+                    <div class="mb-3">
+                        <label for="landingName" class="form-label">Landing Page Name</label>
+                        <input type="text" class="form-control" id="landingName" placeholder="Enter landing page name">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <table class="table borderless align-middle">
+                                <tr>
+                                    <td style="width:50%; vertical-align:top;">
+                                        <label for="landingContent" class="form-label">Landing Page HTML Editor</label>
+                                        <textarea class="form-control" id="landingContent" rows="10" placeholder="HTML or text for landing page..."></textarea>
+                                    </td>
+                                    <td style="width:50%; vertical-align:top;">
+                                        <label class="form-label">Live Preview</label>
+                                        <div id="landingPreview" style="border:1px solid #ccc; min-height:200px; padding:1rem; background:#fafafa;"></div>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table class="table borderless mt-2">
+                                <tr>
+                                    <td class="text-center">
+                                        <button type="submit" class="btn btn-info" style="min-width:120px;" id="saveLandingBtn">Save</button>
+                                        <button type="button" class="btn btn-danger ms-2" style="min-width:100px;" id="deleteLandingBtn">Delete</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="tab-pane fade" id="users" role="tabpanel">
+                <h4>Users & Groups</h4>
+                <form>
+                    <div class="mb-3">
+                        <label for="userEmails" class="form-label">Add Users (comma separated emails)</label>
+                        <input type="text" class="form-control" id="userEmails" placeholder="user1@example.com, user2@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="groupName" class="form-label">Group Name</label>
+                        <input type="text" class="form-control" id="groupName" placeholder="Enter group name">
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Add Group</button>
+                </form>
+                <p class="mt-3">List of users and groups will appear here.</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // --- Raw HTML Editor Initialization ---
+        let quill = null, landingQuill = null;
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove Quill, use textarea for raw HTML input
+            var quillEditorDiv = document.getElementById('quillEditor');
+            if (quillEditorDiv) quillEditorDiv.parentNode.removeChild(quillEditorDiv);
+            document.getElementById('templateContent').classList.remove('d-none');
+            var landingQuillEditorDiv = document.getElementById('landingQuillEditor');
+            if (landingQuillEditorDiv) landingQuillEditorDiv.parentNode.removeChild(landingQuillEditorDiv);
+            document.getElementById('landingContent').classList.remove('d-none');
+            // Live preview for raw HTML
+            document.getElementById('templateContent').addEventListener('input', renderTemplatePreview);
+            document.getElementById('landingContent').addEventListener('input', renderLandingPreview);
+            // Initial preview render in case textarea has value
+            renderTemplatePreview();
+            renderLandingPreview();
+        });
+        // --- Live Preview Functions ---
+        function renderTemplatePreview() {
+            const html = document.getElementById('templateContent').value;
+            document.getElementById('templatePreview').innerHTML = html;
+        }
+        function renderLandingPreview() {
+            const html = document.getElementById('landingContent').value;
+            document.getElementById('landingPreview').innerHTML = html;
+        }
+        // --- Email Template CRUD ---
+        let emailTemplates = {};
+        function fetchEmailTemplates() {
+            fetch('/api/email-templates')
+                .then(res => res.json())
+                .then(data => {
+                    emailTemplates = {};
+                    const select = document.getElementById('templateSelect');
+                    select.innerHTML = '<option value="">-- Select --</option>';
+                    data.forEach(t => {
+                        emailTemplates[t.id] = t;
+                        select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                    });
+                });
+        }
+        function loadEmailTemplate() {
+            var id = document.getElementById('templateSelect').value;
+            if (emailTemplates[id]) {
+                document.getElementById('templateName').value = emailTemplates[id].name;
+                document.getElementById('templateContent').value = emailTemplates[id].htmlContent;
+                renderTemplatePreview();
+            } else {
+                document.getElementById('templateName').value = "";
+                document.getElementById('templateContent').value = "";
+                document.getElementById('templatePreview').innerHTML = "";
+            }
+        }
+        document.querySelector('#template-tab').addEventListener('click', fetchEmailTemplates);
+        document.querySelector('#templateSelect').addEventListener('change', loadEmailTemplate);
+        document.querySelector('#templateName').addEventListener('input', () => {
+            document.getElementById('templateName').value = document.getElementById('templateName').value;
+        });
+        document.querySelector('#template-tab').addEventListener('click', renderTemplatePreview);
+        document.querySelector('#template-tab').addEventListener('click', () => {
+            document.getElementById('templateName').value = "";
+            document.getElementById('templateContent').value = "";
+            document.getElementById('templatePreview').innerHTML = "";
+        });
+        document.querySelector('#template-tab').addEventListener('click', () => {
+            document.querySelector('form[onsubmit="event.preventDefault();"] .btn-success').onclick = function() {
+                const id = document.getElementById('templateSelect').value;
+                const dto = {
+                    name: document.getElementById('templateName').value,
+                    htmlContent: document.getElementById('templateContent').value,
+                    subject: document.getElementById('templateSubject').value
+                };
+                if (id) {
+                    fetch(`/api/email-templates/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dto)
+                    }).then(() => { alert('Template updated!'); fetchEmailTemplates(); });
+                } else {
+                    fetch('/api/email-templates', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dto)
+                    }).then(() => { alert('Template saved!'); fetchEmailTemplates(); });
+                }
+            };
+        });
+        // Remove previous dynamic button creation for deleteTemplateBtn and update event listeners to use the new static button ids
+        document.querySelector('#template-tab').addEventListener('click', () => {
+            document.getElementById('deleteTemplateBtn').onclick = function() {
+                const id = document.getElementById('templateSelect').value;
+                if (id) {
+                    if (confirm('Are you sure you want to delete this template?')) {
+                        fetch(`/api/email-templates/${id}`, { method: 'DELETE' })
+                            .then(() => { alert('Template deleted!'); fetchEmailTemplates(); loadEmailTemplate(); });
+                    }
+                } else {
+                    alert('Select a template to delete.');
+                }
+            };
+            // Ensure preview works after Quill is initialized
+            renderTemplatePreview();
+        });
+        // --- Landing Page CRUD ---
+        let landingPages = {};
+        function fetchLandingPages() {
+            fetch('/api/landing-pages')
+                .then(res => res.json())
+                .then(data => {
+                    landingPages = {};
+                    const select = document.getElementById('landingSelect');
+                    select.innerHTML = '<option value="">-- Select --</option>';
+                    data.forEach(p => {
+                        landingPages[p.id] = p;
+                        select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                    });
+                });
+        }
+        function loadLandingPage() {
+            var id = document.getElementById('landingSelect').value;
+            if (landingPages[id]) {
+                document.getElementById('landingName').value = landingPages[id].name;
+                document.getElementById('landingContent').value = landingPages[id].htmlContent;
+                renderLandingPreview();
+            } else {
+                document.getElementById('landingName').value = "";
+                document.getElementById('landingContent').value = "";
+                document.getElementById('landingPreview').innerHTML = "";
+            }
+        }
+        document.querySelector('#landing-tab').addEventListener('click', fetchLandingPages);
+        document.querySelector('#landingSelect').addEventListener('change', loadLandingPage);
+        document.querySelector('#landingName').addEventListener('input', () => {
+            document.getElementById('landingName').value = document.getElementById('landingName').value;
+        });
+        document.querySelector('#landing-tab').addEventListener('click', renderLandingPreview);
+        document.querySelector('#landing-tab').addEventListener('click', () => {
+            document.getElementById('landingName').value = "";
+            document.getElementById('landingContent').value = "";
+            document.getElementById('landingPreview').innerHTML = "";
+        });
+        document.querySelector('#landing-tab').addEventListener('click', () => {
+            document.querySelector('form[onsubmit="event.preventDefault();"] .btn-info').onclick = function() {
+                const id = document.getElementById('landingSelect').value;
+                const dto = {
+                    name: document.getElementById('landingName').value,
+                    htmlContent: document.getElementById('landingContent').value
+                };
+                if (id) {
+                    fetch(`/api/landing-pages/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dto)
+                    }).then(() => { alert('Landing page updated!'); fetchLandingPages(); });
+                } else {
+                    fetch('/api/landing-pages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(dto)
+                    }).then(() => { alert('Landing page saved!'); fetchLandingPages(); });
+                }
+            };
+        });
+        // Add delete buttons and logic for Landing Page
+        document.querySelector('#landing-tab').addEventListener('click', () => {
+            let deleteBtn = document.getElementById('deleteLandingBtn');
+            if (!deleteBtn) {
+                deleteBtn = document.createElement('button');
+                deleteBtn.id = 'deleteLandingBtn';
+                deleteBtn.className = 'btn btn-danger mt-2';
+                deleteBtn.textContent = 'Delete Landing Page';
+                // Fix selector: use form tag, not .form class
+                document.querySelector('#landing form').appendChild(deleteBtn);
+            }
+            deleteBtn.onclick = function() {
+                const id = document.getElementById('landingSelect').value;
+                if (id) {
+                    if (confirm('Are you sure you want to delete this landing page?')) {
+                        fetch(`/api/landing-pages/${id}`, { method: 'DELETE' })
+                            .then(() => { alert('Landing page deleted!'); fetchLandingPages(); loadLandingPage(); });
+                    }
+                } else {
+                    alert('Select a landing page to delete.');
+                }
+            };
+            // Ensure preview works after Quill is initialized
+            renderLandingPreview();
+        });
+        // --- Populate Landing Page Dropdown in Email Template ---
+        function fetchLandingPagesForTemplate() {
+            fetch('/api/landing-pages')
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('templateLandingPage');
+                    select.innerHTML = '<option value="">-- Select Landing Page --</option>';
+                    data.forEach(p => {
+                        select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                    });
+                });
+        }
+        document.querySelector('#template-tab').addEventListener('click', fetchLandingPagesForTemplate);
+        // --- AI Integration for Email Template ---
+        document.getElementById('templateAIFetchBtn').addEventListener('click', function() {
+            let userQuery = document.getElementById('templateAIQuery').value;
+            const selectedTarget = document.querySelector('input[name="templateAIOutput"]:checked').value;
+            if (selectedTarget === 'body') {
+                const landingPageId = document.getElementById('templateLandingPage').value;
+                let landingUrl = '';
+                if (landingPageId) {
+                    landingUrl = `http://localhost:8080/public/landing/${landingPageId}`;
+                }
+                userQuery += ' api conent must only contain html content and no more messages above or below html and nor more code blocks and use the provided landing page url as value of hyperlink ';
+                if (landingUrl) {
+                    userQuery += ` Landing page URL: ${landingUrl}`;
+                }
+            }
+            if (!userQuery) {
+                alert('Please enter a query.');
+                return;
+            }
+            fetch('https://api.sage.cudasvc.com/openai/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiJ9.eyJpc3MiOiJkZXZlbG9wZXIiLCJraWQiOiIxIiwiaWF0IjoxNzU0MzkwNDgzLjkzNDQzMywibmJmIjoxNzU0MzkwNDg2LjkzNDQzMywiZXhwIjoxNzU0NjQ5Njg2LjkzNDQzMywicHJlZmVycmVkX3VzZXJuYW1lIjoicmN1QGJhcnJhY3VkYS5jb20iLCJuYW1lIjoiUmFnaHVyYWFtIEMgVSIsInNlc3Npb25fdG9rZW4iOiI3ZjY2M2NiNy00MGZkLTRlNTctOTg4OS04YjkyYmQ0ODk2OTcifQ.BfmolglO870Zz3nF361tDaUW2rtzpexsKSAyeM7gWXDeYlFuogr0LedZug6sbF7gZqgXF1ThEEZRSiAi_rU8IrnJRT7E3BwZfuoFfw7xDBC-4oGTL7xP6UB9VA3kk4wYg62FF344UW2Jb4vpmTZ1WpRayLUxug9-DlGS1C2_Ig_ahtr6_eMq693fLY86hlR3V8GNHTd0EL3hibCr1mIReKbZFptBjSx3OkKPB6jsLmbuhmmjmSeDL7WoN3KwHMy30qlUP54CkhCRBTZ7VeO6okNx8QUzipk-zfGhn1Q_AdDY2L1OdqnbxVsMbORtKbs_nG-Kyo3NboAiynswQAEe2fizGkbkklId4BcryeAYIZYWKbgx_pnIFjMcGeu66yzMipK5YL2BGgAIIjP6KsX8qTXcW5eSdW_qohFG91xxOHSwArFfNAd_rd5v_u8zOwVwvxxXDadWYLCigmzIjHMpXNYdv284zTdI_c3ueW1v_CJtPuiof3vw6gUxo2oCJz4iXlEWuQ1H6EwFyT9yn6VZDZWDFwxw-M3oYgJdLE3AYrf42t9AAX5y6-DxsX6zNcHJlyasBAR3WMNCqQC5n03Re5pbiZIh0oRPH2T-0YvkMLjqtvjqu8UxSLcK4-_9uYbom_gE_Tym766NDRJp1h53WSEGY4XXMJ0dhlBSJoB5EdM',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    messages: [{ content: userQuery, role: 'user' }],
+                    model: 'gpt-4o-mini'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseContent = data.choices[0].message.content;
+                if (selectedTarget === 'subject') {
+                    document.getElementById('templateSubject').value = responseContent;
+                } else if (selectedTarget === 'body') {
+                    document.getElementById('templateContent').value = responseContent;
+                    renderTemplatePreview();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            });
+        });
+        document.getElementById('templateContent').addEventListener('input', renderTemplatePreview);
+        document.getElementById('templateSubject').addEventListener('input', function() {
+            if (this.value.split(/\s+/).length > 10) {
+                this.value = this.value.split(/\s+/).slice(0,10).join(' ');
+            }
+        });
+        // --- AI Integration for Landing Page ---
+        document.getElementById('landingAIFetchBtn').addEventListener('click', function() {
+            let userQuery = document.getElementById('landingAIQuery').value;
+            userQuery += ', content tag must only contain html content, no additional info above and below html content and no code blocks.';
+            if (!userQuery) {
+                alert('Please enter a query.');
+                return;
+            }
+            fetch('https://api.sage.cudasvc.com/openai/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiJ9.eyJpc3MiOiJkZXZlbG9wZXIiLCJraWQiOiIxIiwiaWF0IjoxNzU0MzkwNDgzLjkzNDQzMywibmJmIjoxNzU0MzkwNDg2LjkzNDQzMywiZXhwIjoxNzU0NjQ5Njg2LjkzNDQzMywicHJlZmVycmVkX3VzZXJuYW1lIjoicmN1QGJhcnJhY3VkYS5jb20iLCJuYW1lIjoiUmFnaHVyYWFtIEMgVSIsInNlc3Npb25fdG9rZW4iOiI3ZjY2M2NiNy00MGZkLTRlNTctOTg4OS04YjkyYmQ0ODk2OTcifQ.BfmolglO870Zz3nF361tDaUW2rtzpexsKSAyeM7gWXDeYlFuogr0LedZug6sbF7gZqgXF1ThEEZRSiAi_rU8IrnJRT7E3BwZfuoFfw7xDBC-4oGTL7xP6UB9VA3kk4wYg62FF344UW2Jb4vpmTZ1WpRayLUxug9-DlGS1C2_Ig_ahtr6_eMq693fLY86hlR3V8GNHTd0EL3hibCr1mIReKbZFptBjSx3OkKPB6jsLmbuhmmjmSeDL7WoN3KwHMy30qlUP54CkhCRBTZ7VeO6okNx8QUzipk-zfGhn1Q_AdDY2L1OdqnbxVsMbORtKbs_nG-Kyo3NboAiynswQAEe2fizGkbkklId4BcryeAYIZYWKbgx_pnIFjMcGeu66yzMipK5YL2BGgAIIjP6KsX8qTXcW5eSdW_qohFG91xxOHSwArFfNAd_rd5v_u8zOwVwvxxXDadWYLCigmzIjHMpXNYdv284zTdI_c3ueW1v_CJtPuiof3vw6gUxo2oCJz4iXlEWuQ1H6EwFyT9yn6VZDZWDFwxw-M3oYgJdLE3AYrf42t9AAX5y6-DxsX6zNcHJlyasBAR3WMNCqQC5n03Re5pbiZIh0oRPH2T-0YvkMLjqtvjqu8UxSLcK4-_9uYbom_gE_Tym766NDRJp1h53WSEGY4XXMJ0dhlBSJoB5EdM',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    messages: [{ content: userQuery, role: 'user' }],
+                    model: 'gpt-4o-mini'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseContent = data.choices[0].message.content;
+                document.getElementById('landingContent').value = responseContent;
+                renderLandingPreview();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error: ' + error.message);
+            });
+        });
+        document.getElementById('landingContent').addEventListener('input', renderLandingPreview);
+        // --- Populate Email Template Dropdown ---
+        function fetchEmailTemplatesForCampaign() {
+            fetch('/api/email-templates')
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('campaignEmailTemplate');
+                    select.innerHTML = '<option value="">-- Select Email Template --</option>';
+                    data.forEach(t => {
+                        select.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                    });
+                });
+        }
+        document.querySelector('#campaign-tab').addEventListener('click', fetchEmailTemplatesForCampaign);
+        // --- Populate Landing Page Dropdown ---
+        function fetchLandingPagesForCampaign() {
+            fetch('/api/landing-pages')
+                .then(res => res.json())
+                .then(data => {
+                    const select = document.getElementById('campaignLandingPage');
+                    select.innerHTML = '<option value="">-- Select Landing Page --</option>';
+                    data.forEach(p => {
+                        select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                    });
+                });
+        }
+        document.querySelector('#campaign-tab').addEventListener('click', fetchLandingPagesForCampaign);
+        // --- Save Campaign and Send Emails ---
+        document.getElementById('createCampaignBtn').onclick = function() {
+            const campaign = {
+                name: document.getElementById('campaignName').value,
+                description: document.getElementById('campaignDesc').value,
+                targetUsers: document.getElementById('targetUsers').value,
+                emailTemplateId: document.getElementById('campaignEmailTemplate').value,
+                landingPageId: document.getElementById('campaignLandingPage').value
+            };
+            fetch('/api/campaigns', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(campaign)
+            }).then(res => res.json())
+            .then(data => {
+                alert('Campaign saved and emails sent!');
+            });
+        };
+    </script>
+</body>
+</html>
