@@ -4,7 +4,6 @@ import com.hackathon.phishing_simulator.entity.Campaign;
 import com.hackathon.phishing_simulator.entity.EmailTemplate;
 import com.hackathon.phishing_simulator.repository.CampaignRepository;
 import com.hackathon.phishing_simulator.repository.EmailTemplateRepository;
-import com.hackathon.phishing_simulator.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

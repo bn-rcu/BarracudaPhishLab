@@ -1,13 +1,106 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <title>Phishing Campaign Simulator</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
-        body { padding: 2rem; }
-        .tab-content { margin-top: 2rem; }
+        body {
+            padding: 2rem;
+            background: #f8f9fa;
+            color: #22223b;
+        }
+        /* Header */
+        .main-header {
+            background: linear-gradient(90deg, #0056b3 60%, #00b4d8 100%);
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .main-header h2 {
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin: 0;
+        }
+        .main-header img {
+            height: 48px;
+            margin-right: 1rem;
+        }
+        /* Tabs */
+        .nav-tabs .nav-link.active {
+            background: #0056b3;
+            color: #fff !important;
+            border-color: #0056b3 #0056b3 #fff;
+            font-weight: 600;
+        }
+        .nav-tabs .nav-link {
+            color: #0056b3;
+            font-weight: 500;
+            border-radius: 0.5rem 0.5rem 0 0;
+            margin-right: 2px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .nav-tabs .nav-link:hover {
+            background: #e3f2fd;
+            color: #003366;
+        }
+        /* Cards */
+        .card {
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            border: none;
+        }
+        .card .card-title {
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        /* Dashboard Cards */
+        .dashboard-card.bg-primary {
+            background: linear-gradient(135deg, #0056b3 70%, #00b4d8 100%);
+        }
+        .dashboard-card.bg-warning {
+            background: linear-gradient(135deg, #ffd166 70%, #ffe699 100%);
+            color: #22223b !important;
+        }
+        .dashboard-card.bg-danger {
+            background: linear-gradient(135deg, #ef476f 70%, #ffd166 100%);
+        }
+        /* Table Styles */
+        .table {
+            background: #fff;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .table th, .table td {
+            border: none !important;
+            vertical-align: middle;
+        }
+        .table tr {
+            transition: background 0.2s;
+        }
+        .table tr:hover {
+            background: #e3f2fd;
+        }
+        .table thead th {
+            background: #0056b3;
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid #00b4d8 !important;
+        }
+        .table.borderless th, .table.borderless td {
+            border: none !important;
+        }
+        /* Form Labels */
         label.form-label, label { font-weight: bold; }
+        /* Editors & Previews */
         #templateContent, #landingContent {
             min-height: 400px;
             height: 400px;
@@ -25,10 +118,12 @@
 </head>
 <body>
     <div class="container">
-        <h2 class="mb-4">Phishing Campaign Simulator</h2>
-        <div class="d-flex justify-content-end mb-3">
-            <a href="/logout" class="btn btn-outline-danger">Logout</a>
-        </div>
+        <header class="main-header">
+            <div class="d-flex align-items-center">
+                <h2>Phishing Campaign Simulator</h2>
+            </div>
+            <a href="/logout" class="btn btn-outline-light">Logout</a>
+        </header>
         <ul class="nav nav-tabs" id="mainTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">Dashboard</button>
@@ -45,11 +140,43 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab">Users & Groups</button>
             </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="eml-tab" data-bs-toggle="tab" data-bs-target="#eml" type="button" role="tab">EML Upload</button>
+            </li>
         </ul>
         <div class="tab-content" id="mainTabContent">
             <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
-                <h4>Dashboard</h4>
-                <p>Overview of campaigns and statistics will appear here.</p>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card dashboard-card bg-primary text-white mb-3 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-bar-chart-fill" style="font-size:2.5rem;"></i>
+                                <h5 class="card-title mt-2">Campaigns</h5>
+                                <span class="display-5 fw-bold" id="dashboardCampaignCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card dashboard-card bg-warning text-dark mb-3 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-envelope-fill" style="font-size:2.5rem;"></i>
+                                <h5 class="card-title mt-2">Email Templates</h5>
+                                <span class="display-5 fw-bold" id="dashboardTemplateCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card dashboard-card bg-danger text-white mb-3 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-globe2" style="font-size:2.5rem;"></i>
+                                <h5 class="card-title mt-2">Landing Pages</h5>
+                                <span class="display-5 fw-bold" id="dashboardLandingPageCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-info mb-2" id="dashboardAIInsightsBtn">Get AI Insights</button>
+                <div id="dashboardAIInsights" class="alert alert-secondary" style="display:none;"></div>
             </div>
             <div class="tab-pane fade" id="campaign" role="tabpanel">
                 <h4>Campaign</h4>
@@ -204,10 +331,39 @@
                 </form>
                 <p class="mt-3">List of users and groups will appear here.</p>
             </div>
+            <div class="tab-pane fade" id="eml" role="tabpanel">
+                <h4>Upload .eml File</h4>
+                <form id="emlUploadForm" enctype="multipart/form-data" onsubmit="event.preventDefault(); uploadEmlFile();">
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="emlFile" accept=".eml" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload & Extract HTML</button>
+                </form>
+                <div id="emlLoading" class="text-info mb-2" style="display:none;">
+                    <div class="spinner-border spinner-border-sm" role="status"></div> Extracting HTML...
+                </div>
+                <div class="mt-4">
+                    <label class="form-label">Extracted HTML Content:</label>
+                    <table class="table borderless align-middle">
+                        <tr>
+                            <td style="width:50%; vertical-align:top;">
+                                <label class="form-label">Preview</label>
+                                <div id="emlHtmlPreview" style="border:1px solid #ccc; min-height:200px; padding:1rem; background:#fafafa; overflow:auto;"></div>
+                            </td>
+                            <td style="width:50%; vertical-align:top;">
+                                <label class="form-label">HTML Code</label>
+                                <textarea id="emlHtmlCode" class="form-control" style="background: rgb(245, 245, 245); font-family: monospace; overflow: auto; resize: vertical; height: 1030px;" readonly=""></textarea>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- ...existing JavaScript code remains unchanged... -->
     <script>
+        const SAGE_API_BEARER = "eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiJ9.eyJpc3MiOiJkZXZlbG9wZXIiLCJraWQiOiIxIiwiaWF0IjoxNzU0NTQ3MzYwLjIzMTIxNSwibmJmIjoxNzU0NTQ3MzYzLjIzMTIxNSwiZXhwIjoxNzU0ODA2NTYzLjIzMTIxNSwicHJlZmVycmVkX3VzZXJuYW1lIjoibmFtQGJhcnJhY3VkYS5jb20iLCJuYW1lIjoiTmFuZGhpbmkgTSIsInNlc3Npb25fdG9rZW4iOiJjY2Q1NGIxNC1lYjE5LTQ3MmUtYWMwYy0xZDFhZWM4ZmU0MjQifQ.VPCrTbZfRk4adIrPWa9tgSLeK-3lb5i8HNcjvnaiK4luy0oFAWb3KorHTFH83WKCRfafm87L8P6fK8LXC_T0FCQ09WI-TT6uWIe7vBwVcXlLFuE0p2jxpHLl7Hd185AOikQrt_3pj4NPOk986kE_cxFWMBVXJtW8T0l2A1BUjNuQzsynD8LV67Z6EZ5pJIwLd-E2tFe46QgAX73z6rOZgM5zHyBuEQj8fqHlhugjDBVmyosoY1jJ2W4a4I3xPK-TRgor_Jy6nECewRcB3GQ-ZuWYffdr9EamcU3plWRfFD7An8F4exdu8sG_KtyVn1O03jT3Da2PHJm1ZWNCJeuQdeTqsIJiZvg58ttFUMMM89lA7m3PDOCx1hSCdYb9mT0jtwtV3nHZOiPlh9afLalbCKDdiz010AE6oIt04C-ZIHHd1PNjZUHq3dpsVlQsIlZj3i9kRIkLGNRqnNQCbTZty46B7CAvh9tnmdaiip8_OF-Emes6wZYfTMZ7Qc7V6lWuRth9i-8C_PcN8OETBLUanxY-6hD4QiO2aNZqzBuOVO6iERP9_fG9APFHJkIicB2U4abBh5cxKaM9GD1PqY_BJNa-S4qceD7C0fEj8lRssw0Z057hX8jxo9AsyHzUc7BsqaQOtTOICjkTCO-DqXKZeD0QvpQpF-YOFbMDd5UMUrw";
         // --- Raw HTML Editor Initialization ---
         let quill = null, landingQuill = null;
         document.addEventListener('DOMContentLoaded', function() {
@@ -416,6 +572,33 @@
                     });
                 });
         }
+        function uploadEmlFile() {
+            const fileInput = document.getElementById('emlFile');
+            if (!fileInput.files.length) {
+                alert('Please select a .eml file.');
+                return;
+            }
+            document.getElementById('emlLoading').style.display = 'block';
+            document.getElementById('emlHtmlPreview').innerHTML = '';
+            document.getElementById('emlHtmlCode').value = '';
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            fetch('/api/eml/extract-html', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('emlHtmlPreview').innerHTML = data.htmlContent || '<em>No HTML content found.</em>';
+                document.getElementById('emlHtmlCode').value = data.htmlContent || '';
+            })
+            .catch(err => {
+                alert('Failed to extract HTML: ' + err);
+            })
+            .finally(() => {
+                document.getElementById('emlLoading').style.display = 'none';
+            });
+        }
         document.querySelector('#template-tab').addEventListener('click', fetchLandingPagesForTemplate);
         // --- AI Integration for Email Template ---
         document.getElementById('templateAIFetchBtn').addEventListener('click', function() {
@@ -441,12 +624,12 @@
             fetch('https://api.sage.cudasvc.com/openai/chat/completions', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiJ9.eyJpc3MiOiJkZXZlbG9wZXIiLCJraWQiOiIxIiwiaWF0IjoxNzU0MzkwNDgzLjkzNDQzMywibmJmIjoxNzU0MzkwNDg2LjkzNDQzMywiZXhwIjoxNzU0NjQ5Njg2LjkzNDQzMywicHJlZmVycmVkX3VzZXJuYW1lIjoicmN1QGJhcnJhY3VkYS5jb20iLCJuYW1lIjoiUmFnaHVyYWFtIEMgVSIsInNlc3Npb25fdG9rZW4iOiI3ZjY2M2NiNy00MGZkLTRlNTctOTg4OS04YjkyYmQ0ODk2OTcifQ.BfmolglO870Zz3nF361tDaUW2rtzpexsKSAyeM7gWXDeYlFuogr0LedZug6sbF7gZqgXF1ThEEZRSiAi_rU8IrnJRT7E3BwZfuoFfw7xDBC-4oGTL7xP6UB9VA3kk4wYg62FF344UW2Jb4vpmTZ1WpRayLUxug9-DlGS1C2_Ig_ahtr6_eMq693fLY86hlR3V8GNHTd0EL3hibCr1mIReKbZFptBjSx3OkKPB6jsLmbuhmmjmSeDL7WoN3KwHMy30qlUP54CkhCRBTZ7VeO6okNx8QUzipk-zfGhn1Q_AdDY2L1OdqnbxVsMbORtKbs_nG-Kyo3NboAiynswQAEe2fizGkbkklId4BcryeAYIZYWKbgx_pnIFjMcGeu66yzMipK5YL2BGgAIIjP6KsX8qTXcW5eSdW_qohFG91xxOHSwArFfNAd_rd5v_u8zOwVwvxxXDadWYLCigmzIjHMpXNYdv284zTdI_c3ueW1v_CJtPuiof3vw6gUxo2oCJz4iXlEWuQ1H6EwFyT9yn6VZDZWDFwxw-M3oYgJdLE3AYrf42t9AAX5y6-DxsX6zNcHJlyasBAR3WMNCqQC5n03Re5pbiZIh0oRPH2T-0YvkMLjqtvjqu8UxSLcK4-_9uYbom_gE_Tym766NDRJp1h53WSEGY4XXMJ0dhlBSJoB5EdM',
+                    'Authorization': 'Bearer ' + SAGE_API_BEARER,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    messages: [{ content: userQuery, role: 'user' }],
+                    messages: [{ role: 'user', content: userQuery }],
                     model: 'gpt-4o-mini'
                 })
             })
@@ -482,12 +665,12 @@
             fetch('https://api.sage.cudasvc.com/openai/chat/completions', {
                 method: 'POST',
                 headers: {
-                    'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJQUzI1NiJ9.eyJpc3MiOiJkZXZlbG9wZXIiLCJraWQiOiIxIiwiaWF0IjoxNzU0MzkwNDgzLjkzNDQzMywibmJmIjoxNzU0MzkwNDg2LjkzNDQzMywiZXhwIjoxNzU0NjQ5Njg2LjkzNDQzMywicHJlZmVycmVkX3VzZXJuYW1lIjoicmN1QGJhcnJhY3VkYS5jb20iLCJuYW1lIjoiUmFnaHVyYWFtIEMgVSIsInNlc3Npb25fdG9rZW4iOiI3ZjY2M2NiNy00MGZkLTRlNTctOTg4OS04YjkyYmQ0ODk2OTcifQ.BfmolglO870Zz3nF361tDaUW2rtzpexsKSAyeM7gWXDeYlFuogr0LedZug6sbF7gZqgXF1ThEEZRSiAi_rU8IrnJRT7E3BwZfuoFfw7xDBC-4oGTL7xP6UB9VA3kk4wYg62FF344UW2Jb4vpmTZ1WpRayLUxug9-DlGS1C2_Ig_ahtr6_eMq693fLY86hlR3V8GNHTd0EL3hibCr1mIReKbZFptBjSx3OkKPB6jsLmbuhmmjmSeDL7WoN3KwHMy30qlUP54CkhCRBTZ7VeO6okNx8QUzipk-zfGhn1Q_AdDY2L1OdqnbxVsMbORtKbs_nG-Kyo3NboAiynswQAEe2fizGkbkklId4BcryeAYIZYWKbgx_pnIFjMcGeu66yzMipK5YL2BGgAIIjP6KsX8qTXcW5eSdW_qohFG91xxOHSwArFfNAd_rd5v_u8zOwVwvxxXDadWYLCigmzIjHMpXNYdv284zTdI_c3ueW1v_CJtPuiof3vw6gUxo2oCJz4iXlEWuQ1H6EwFyT9yn6VZDZWDFwxw-M3oYgJdLE3AYrf42t9AAX5y6-DxsX6zNcHJlyasBAR3WMNCqQC5n03Re5pbiZIh0oRPH2T-0YvkMLjqtvjqu8UxSLcK4-_9uYbom_gE_Tym766NDRJp1h53WSEGY4XXMJ0dhlBSJoB5EdM',
+                    'Authorization': 'Bearer ' + SAGE_API_BEARER,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify({
-                    messages: [{ content: userQuery, role: 'user' }],
+                    messages: [{ role: 'user', content: userQuery }],
                     model: 'gpt-4o-mini'
                 })
             })
@@ -547,18 +730,52 @@
                 alert('Campaign saved and emails sent!');
             });
         };
-
-        // Require Landing Page selection before AI fetch for subject
-        const templateAIFetchBtn = document.getElementById('templateAIFetchBtn');
-        templateAIFetchBtn.addEventListener('click', function(e) {
-            const outputType = document.querySelector('input[name="templateAIOutput"]:checked').value;
-            const landingPage = document.getElementById('templateLandingPage').value;
-            if (outputType === 'subject' && !landingPage) {
-                alert('Please select a Landing Page before fetching AI for subject.');
-                e.preventDefault();
-                return false;
-            }
+        document.getElementById('emlHtmlCode').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight + 8) + 'px';
         });
+        function fetchDashboardStats() {
+            fetch('/api/dashboard/stats')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('dashboardCampaignCount').innerText = data.campaignCount;
+                    document.getElementById('dashboardTemplateCount').innerText = data.templateCount;
+                    document.getElementById('dashboardLandingPageCount').innerText = data.landingPageCount;
+                });
+        }
+        document.getElementById('dashboard-tab').addEventListener('click', fetchDashboardStats);
+
+        // AI Insights Button
+        document.getElementById('dashboardAIInsightsBtn').onclick = function() {
+            fetch('/api/dashboard/stats')
+                .then(res => res.json())
+                .then(stats => {
+                    // Call your AI API here, e.g., OpenAI or internal endpoint
+                    return fetch('https://api.sage.cudasvc.com/openai/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer ' + SAGE_API_BEARER,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            messages: [{
+                                content: `Analyze these phishing campaign stats and provide insights: ${JSON.stringify(stats)}`,
+                                role: 'user'
+                            }],
+                            model: 'gpt-4o-mini'
+                        })
+                    });
+                })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('dashboardAIInsights').style.display = 'block';
+                    document.getElementById('dashboardAIInsights').innerText = data.choices[0].message.content;
+                })
+                .catch(() => {
+                    document.getElementById('dashboardAIInsights').style.display = 'block';
+                    document.getElementById('dashboardAIInsights').innerText = 'AI insights could not be loaded.';
+                });
+        };
     </script>
 </body>
 </html>
